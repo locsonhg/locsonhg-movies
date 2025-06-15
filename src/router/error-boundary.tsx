@@ -31,7 +31,7 @@ export const ErrorBoundary = () => {
         </div>
 
         {/* Development error details */}
-        {import.meta.env.DEV && error && (
+        {process.env.NODE_ENV === 'development' && error && (
           <details className="mt-8 text-left bg-red-50 p-4 rounded-lg border border-red-200">
             <summary className="cursor-pointer text-red-700 font-medium">
               Chi tiết lỗi (Development)

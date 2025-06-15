@@ -68,7 +68,7 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
           setIsLoading(false);
         });
 
-        hls.on(Hls.Events.ERROR, (event, data) => {
+        hls.on(Hls.Events.ERROR, (_, data) => {
           console.error("HLS Error:", data);
           setIsLoading(false);
           if (data.fatal) {

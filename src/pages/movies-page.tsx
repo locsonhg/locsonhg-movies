@@ -29,8 +29,8 @@ export const MoviesPage = () => {
     );
   }
 
-  const movies = data?.data?.items || [];
-  const pagination = data?.data?.params?.pagination;
+  const movies = data?.items || [];
+  const pagination = data?.pagination;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -45,11 +45,11 @@ export const MoviesPage = () => {
 
       {/* Movies Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
-        {movies.map((movie) => (
+        {movies.map((movie: any) => (
           <MovieCard
             key={movie._id}
             movie={movie}
-            onClick={(movie) => {
+            onClick={(_movie: any) => {
               // TODO: Navigate to movie detail page
             }}
           />

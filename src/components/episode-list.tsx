@@ -27,7 +27,7 @@ export const EpisodeList = ({
     return currentEpisode === episode.slug;
   };
 
-  const isEpisodeLocked = (index: number) => {
+  const isEpisodeLocked = () => {
     // All episodes are free now
     return false;
   };
@@ -42,7 +42,7 @@ export const EpisodeList = ({
 
       <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
         {displayedEpisodes.map((episode, index) => {
-          const isLocked = isEpisodeLocked(index);
+          const isLocked = isEpisodeLocked();
           const isCurrent = isCurrentEpisode(episode);
 
           return (

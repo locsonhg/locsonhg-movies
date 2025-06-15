@@ -59,7 +59,7 @@ export const Layout = () => {
             {/* Search Bar */}
             <div className="flex-1 max-w-md mx-8 hidden lg:block">
               <SearchBar
-                onSearch={(query) => {
+                onSearch={(_query: string) => {
                   // Navigate to search page
                 }}
                 className="w-full"
@@ -166,7 +166,7 @@ export const Layout = () => {
           {/* Mobile Search */}
           <div className="lg:hidden pb-4">
             <SearchBar
-              onSearch={(query) => {
+              onSearch={(_query: string) => {
                 // Handle search
               }}
               className="w-full"

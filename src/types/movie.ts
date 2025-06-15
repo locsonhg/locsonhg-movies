@@ -80,6 +80,7 @@ export interface MovieDetailResponse {
   status: boolean;
   msg: string;
   movie: MovieDetail;
+  episodes: Episode[];
 }
 
 export interface SeoOnPage {

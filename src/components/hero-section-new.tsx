@@ -25,7 +25,6 @@ export const HeroSection = ({
   onMovieClick,
 }: HeroSectionProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   // Helper function to get full image URL
   const getImageUrl = (url: string | undefined) => {

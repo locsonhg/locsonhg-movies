@@ -16,7 +16,7 @@ export const useNewMovies = (
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
     queryKey: ["movies", "new", page],
-    queryFn: () => movieService.getNewMovies(page),
+    queryFn: (): Promise<MovieResponse> => movieService.getNewMovies(page),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
@@ -29,7 +29,7 @@ export const useNewMoviesV2 = (
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
     queryKey: ["movies", "new-v2", page],
-    queryFn: () => movieService.getNewMoviesV2(page),
+    queryFn: (): Promise<MovieResponse> => movieService.getNewMoviesV2(page),
     staleTime: 5 * 60 * 1000,
   });
 };
@@ -42,23 +42,9 @@ export const useMovieDetail = (
 ): UseQueryResult<MovieDetailResponse> => {
   return useQuery({
     queryKey: ["movie", "detail", slug],
-    queryFn: () => movieService.getMovieDetail(slug),
+    queryFn: (): Promise<MovieDetailResponse> => movieService.getMovieDetail(slug),
     enabled: !!slug,
     staleTime: 10 * 60 * 1000, // 10 minutes
-  });
-};
-
-/**
- * Hook để lấy phim theo loại
- */
-export const useMoviesByType = (
-  type: MovieType,
-  params?: MovieListParams
-): UseQueryResult<MovieResponse> => {
-  return useQuery({
-    queryKey: ["movies", "type", type, params],
-    queryFn: () => movieService.getMoviesByType(type, params),
-    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -66,24 +52,13 @@ export const useMoviesByType = (
  * Hook để tìm kiếm phim
  */
 export const useSearchMovies = (
-  searchParams: SearchParams
+  params: SearchParams
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
-    queryKey: ["movies", "search", searchParams],
-    queryFn: () => movieService.searchMovies(searchParams),
-    enabled: !!searchParams.keyword?.trim(),
-    staleTime: 5 * 60 * 1000,
-  });
-};
-
-/**
- * Hook để lấy danh sách thể loại
- */
-export const useCategories = (): UseQueryResult<any> => {
-  return useQuery({
-    queryKey: ["categories"],
-    queryFn: () => movieService.getCategories(),
-    staleTime: 30 * 60 * 1000, // 30 minutes
+    queryKey: ["movies", "search", params],
+    queryFn: (): Promise<MovieResponse> => movieService.searchMovies(params),
+    enabled: !!params.keyword && params.keyword.length >= 2,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 };
 
@@ -91,25 +66,14 @@ export const useCategories = (): UseQueryResult<any> => {
  * Hook để lấy phim theo thể loại
  */
 export const useMoviesByCategory = (
-  categorySlug: string,
+  slug: string,
   params?: MovieListParams
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
-    queryKey: ["movies", "category", categorySlug, params],
-    queryFn: () => movieService.getMoviesByCategory(categorySlug, params),
-    enabled: !!categorySlug,
+    queryKey: ["movies", "category", slug, params],
+    queryFn: (): Promise<MovieResponse> => movieService.getMoviesByCategory(slug, params),
+    enabled: !!slug,
     staleTime: 5 * 60 * 1000,
-  });
-};
-
-/**
- * Hook để lấy danh sách quốc gia
- */
-export const useCountries = (): UseQueryResult<any> => {
-  return useQuery({
-    queryKey: ["countries"],
-    queryFn: () => movieService.getCountries(),
-    staleTime: 30 * 60 * 1000, // 30 minutes
   });
 };
 
@@ -117,13 +81,13 @@ export const useCountries = (): UseQueryResult<any> => {
  * Hook để lấy phim theo quốc gia
  */
 export const useMoviesByCountry = (
-  countrySlug: string,
+  slug: string,
   params?: MovieListParams
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
-    queryKey: ["movies", "country", countrySlug, params],
-    queryFn: () => movieService.getMoviesByCountry(countrySlug, params),
-    enabled: !!countrySlug,
+    queryKey: ["movies", "country", slug, params],
+    queryFn: (): Promise<MovieResponse> => movieService.getMoviesByCountry(slug, params),
+    enabled: !!slug,
     staleTime: 5 * 60 * 1000,
   });
 };
@@ -133,17 +97,30 @@ export const useMoviesByCountry = (
  */
 export const useMoviesByYear = (
   year: number,
-  params?: Omit<MovieListParams, "year">
+  params?: MovieListParams
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
     queryKey: ["movies", "year", year, params],
-    queryFn: () => movieService.getMoviesByYear(year, params),
+    queryFn: (): Promise<MovieResponse> => movieService.getMoviesByYear(year, params),
     enabled: !!year,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
   });
 };
 
-// Convenience hooks for specific movie types
+/**
+ * Hook để lấy phim theo loại (type)
+ */
+export const useMoviesByType = (
+  type: MovieType,
+  params?: MovieListParams
+): UseQueryResult<MovieResponse> => {
+  return useQuery({
+    queryKey: ["movies", "type", type, params],
+    queryFn: (): Promise<MovieResponse> => movieService.getMoviesByType(type, params),
+    enabled: !!type,
+    staleTime: 5 * 60 * 1000,
+  });
+};
 
 /**
  * Hook để lấy phim bộ
@@ -153,17 +130,12 @@ export const useSeriesMovies = (
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
     queryKey: ["movies", "series", params],
-    queryFn: async () => {
-      try {
-        const result = await movieService.getMoviesByType("phim-bo", params);
-        return result;
-      } catch (error) {
-        console.error("🔥 Error calling phim-bo API:", error);
-        throw error;
-      }
+    queryFn: async (): Promise<MovieResponse> => {
+      const result = await movieService.getMoviesByType("phim-bo", params);
+      return result as MovieResponse;
     },
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0,
     retry: 1,
   });
 };
@@ -176,32 +148,27 @@ export const useSingleMovies = (
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
     queryKey: ["movies", "single", params],
-    queryFn: async () => {
-      try {
-        const result = await movieService.getMoviesByType("phim-le", params);
-        return result;
-      } catch (error) {
-        console.error("🔥 Error calling phim-le API:", error);
-        throw error;
-      }
+    queryFn: async (): Promise<MovieResponse> => {
+      const result = await movieService.getMoviesByType("phim-le", params);
+      return result as MovieResponse;
     },
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0,
     retry: 1,
   });
 };
 
 /**
- * Hook để lấy hoạt hình
+ * Hook để lấy phim hoạt hình
  */
 export const useAnimationMovies = (
   params?: MovieListParams
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
     queryKey: ["movies", "hoat-hinh", params],
-    queryFn: () => movieService.getMoviesByType("hoat-hinh", params),
+    queryFn: (): Promise<MovieResponse> => movieService.getMoviesByType("hoat-hinh", params),
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0,
     retry: 1,
   });
 };
@@ -214,9 +181,9 @@ export const useVietsubMovies = (
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
     queryKey: ["movies", "vietsub", params],
-    queryFn: () => movieService.getMoviesByType("phim-vietsub", params),
+    queryFn: (): Promise<MovieResponse> => movieService.getMoviesByType("phim-vietsub", params),
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0,
     retry: 1,
   });
 };
@@ -229,9 +196,24 @@ export const useThuyetMinhMovies = (
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
     queryKey: ["movies", "thuyet-minh", params],
-    queryFn: () => movieService.getMoviesByType("phim-thuyet-minh", params),
+    queryFn: (): Promise<MovieResponse> => movieService.getMoviesByType("phim-thuyet-minh", params),
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0,
+    retry: 1,
+  });
+};
+
+/**
+ * Hook để lấy phim lồng tiếng
+ */
+export const useLongTiengMovies = (
+  params?: MovieListParams
+): UseQueryResult<MovieResponse> => {
+  return useQuery({
+    queryKey: ["movies", "long-tieng", params],
+    queryFn: (): Promise<MovieResponse> => movieService.getMoviesByType("phim-long-tieng", params),
+    staleTime: 0,
+    gcTime: 0,
     retry: 1,
   });
 };
@@ -244,33 +226,12 @@ export const useTVShows = (
 ): UseQueryResult<MovieResponse> => {
   return useQuery({
     queryKey: ["movies", "tv-shows", params],
-    queryFn: async () => {
+    queryFn: async (): Promise<MovieResponse> => {
       const result = await movieService.getMoviesByType("tv-shows", params);
-      return result;
+      return result as MovieResponse;
     },
-    staleTime: 0,
-    cacheTime: 0,
-    retry: 1,
-  });
-};
-
-/**
- * Hook để lấy phim lồng tiếng
- */
-export const useLongTiengMovies = (
-  params?: MovieListParams
-): UseQueryResult<MovieResponse> => {
-  return useQuery({
-    queryKey: ["movies", "phim-long-tieng", params],
-    queryFn: async () => {
-      const result = await movieService.getMoviesByType(
-        "phim-long-tieng",
-        params
-      );
-      return result;
-    },
-    staleTime: 0,
-    cacheTime: 0,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 0,
     retry: 1,
   });
 };
