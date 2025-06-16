@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Layout } from "@/components/layout";
-import { HomePage } from "@/pages/home-page-new";
+import { HomePage } from "@/pages/home";
 import { MoviesPage, CategoriesPage, MovieTypePage, SearchPage } from "@/pages";
 import { WatchMoviePage } from "@/pages/watch-movie";
 import { ErrorBoundary } from "./error-boundary";
