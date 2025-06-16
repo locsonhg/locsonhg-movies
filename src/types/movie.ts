@@ -144,6 +144,31 @@ export interface SearchParams extends MovieListParams {
   keyword: string;
 }
 
+export interface SearchResponse {
+  data: {
+    seoOnPage: any;
+    breadCrumb: any[];
+    titlePage: string;
+    items: Movie[];
+    params: {
+      type_slug: string;
+      keyword: string;
+      filterCategory: string[];
+      filterCountry: string[];
+      filterYear: string[];
+      filterType: string[];
+      sortField: string;
+      sortType: string;
+      pagination: Pagination;
+    };
+    type_list: string;
+    APP_DOMAIN_FRONTEND: string;
+    APP_DOMAIN_CDN_IMAGE: string;
+  };
+  status: string;
+  msg: string;
+}
+
 export type MovieType =
   | "phim-bo"
   | "phim-le"

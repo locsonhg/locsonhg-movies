@@ -28,8 +28,6 @@ export const CategoriesPage = () => {
   // Fetch categories list
   const { data: categoriesData } = useCategories();
 
-  console.log(categoriesData);
-
   // Debounced search functionality
   const debouncedSearch = useCallback(
     debounce((keyword: string) => {

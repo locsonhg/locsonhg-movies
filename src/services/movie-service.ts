@@ -3,6 +3,7 @@ import type {
   MovieDetailResponse,
   MovieListParams,
   SearchParams,
+  SearchResponse,
   MovieType,
   CategoriesResponse,
 } from "@/types";
@@ -75,8 +76,8 @@ class MovieService {
   /**
    * Tìm kiếm phim
    */
-  async searchMovies(searchParams: SearchParams): Promise<MovieResponse> {
-    return this.fetchFromAPI<MovieResponse>("/v1/api/tim-kiem", searchParams);
+  async searchMovies(searchParams: SearchParams): Promise<SearchResponse> {
+    return this.fetchFromAPI<SearchResponse>("/v1/api/tim-kiem", searchParams);
   }
 
   /**

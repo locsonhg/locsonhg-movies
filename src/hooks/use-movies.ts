@@ -5,6 +5,7 @@ import type {
   MovieDetailResponse,
   MovieListParams,
   SearchParams,
+  SearchResponse,
   MovieType,
   CategoriesResponse,
 } from "@/types";
@@ -55,10 +56,10 @@ export const useMovieDetail = (
  */
 export const useSearchMovies = (
   params: SearchParams
-): UseQueryResult<MovieResponse> => {
+): UseQueryResult<SearchResponse> => {
   return useQuery({
     queryKey: ["movies", "search", params],
-    queryFn: (): Promise<MovieResponse> => movieService.searchMovies(params),
+    queryFn: (): Promise<SearchResponse> => movieService.searchMovies(params),
     enabled: !!params.keyword && params.keyword.length >= 2,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });

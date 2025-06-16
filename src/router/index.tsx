@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Layout } from "@/components/layout";
 import { HomePage } from "@/pages/home-page-new";
-import { MoviesPage, CategoriesPage, MovieTypePage } from "@/pages";
+import { MoviesPage, CategoriesPage, MovieTypePage, SearchPage } from "@/pages";
 import { WatchMoviePage } from "@/pages/watch-movie";
 import { ErrorBoundary } from "./error-boundary";
 
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
       },
       {
         path: "search",
-        element: <div>Search Page - Coming Soon</div>,
+        element: <SearchPage />,
       },
       {
         path: "categories",

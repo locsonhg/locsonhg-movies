@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { debounce } from "@/utils";
 
 interface SearchBarProps {
@@ -12,6 +13,7 @@ export const SearchBar = ({
   placeholder = "Tìm kiếm phim, diễn viên...",
   className = "",
 }: SearchBarProps) => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,6 +43,7 @@ export const SearchBar = ({
     if (query.trim()) {
       onSearch?.(query);
       setIsOpen(false);
+      navigate(`/search?q=${encodeURIComponent(query)}`);
     }
   };
 
@@ -125,6 +128,7 @@ export const SearchBar = ({
                     setQuery(search);
                     onSearch?.(search);
                     setIsOpen(false);
+                    navigate(`/search?q=${encodeURIComponent(search)}`);
                   }}
                   className="w-full text-left p-2 hover:bg-gray-700 rounded text-white text-sm"
                 >
