@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useMovieDetail, useSeriesMovies } from "@/hooks";
 import { VideoPlayer } from "@/components/video-player";
 import { EpisodeList } from "@/components/episode-list";
@@ -9,14 +9,24 @@ import { ServerList } from "@/components/server-list";
 import type { Movie, EpisodeData, Episode } from "@/types";
 
 export const WatchMoviePage = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug, episodeSlug } = useParams<{
+    slug: string;
+    episodeSlug?: string;
+  }>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [currentEpisode, setCurrentEpisode] = useState<EpisodeData | null>(
     null
   );
   const [currentServer, setCurrentServer] = useState<Episode | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
+
+  console.log({
+    currentEpisode,
+    currentServer,
+    slug,
+  });
 
   // Fetch movie detail
   const {
@@ -36,31 +46,67 @@ export const WatchMoviePage = () => {
   const movieDetail = movieDetailResponse?.movie;
   const episodes = movieDetailResponse?.episodes || [];
 
+  // Reset state when slug changes (switching to different movie)
+  useEffect(() => {
+    setCurrentEpisode(null);
+    setCurrentServer(null);
+    setShowTrailer(false);
+  }, [slug]);
+
   // Set initial server and episode when movie data loads
   useEffect(() => {
     if (episodes.length > 0 && !currentServer) {
       setCurrentServer(episodes[0]);
-      if (episodes[0]?.server_data?.length > 0) {
-        setCurrentEpisode(episodes[0].server_data[0]);
+
+      // If there's an episodeSlug in URL, try to find and set that episode
+      if (episodeSlug && episodes[0]?.server_data?.length > 0) {
+        const foundEpisode = episodes[0].server_data.find(
+          (ep: EpisodeData) => ep.slug === episodeSlug
+        );
+        if (foundEpisode) {
+          setCurrentEpisode(foundEpisode);
+        } else {
+          // If episode not found, redirect to first episode
+          const firstEpisode = episodes[0].server_data[0];
+          setCurrentEpisode(firstEpisode);
+          const newPath = `/watch/${slug}/${firstEpisode.slug}`;
+          navigate(newPath, { replace: true });
+        }
+      } else if (episodes[0]?.server_data?.length > 0) {
+        // No episodeSlug in URL, redirect to first episode
+        const firstEpisode = episodes[0].server_data[0];
+        setCurrentEpisode(firstEpisode);
+        const newPath = `/watch/${slug}/${firstEpisode.slug}`;
+        navigate(newPath, { replace: true });
       }
     }
-  }, [episodes, currentServer]);
+  }, [episodes, currentServer, episodeSlug, slug, navigate]);
 
   const handleEpisodeSelect = (episode: EpisodeData) => {
     setCurrentEpisode(episode);
     setShowTrailer(false);
+
+    // Update URL to include episode slug
+    const newPath = `/watch/${slug}/${episode.slug}`;
+    navigate(newPath, { replace: true });
   };
 
   const handleServerSelect = (server: Episode) => {
     setCurrentServer(server);
     if (server.server_data?.length > 0) {
       setCurrentEpisode(server.server_data[0]);
+      // Update URL to include the first episode of the new server
+      const newPath = `/watch/${slug}/${server.server_data[0].slug}`;
+      navigate(newPath, { replace: true });
     }
     setShowTrailer(false);
   };
 
   const handleWatchTrailer = () => {
     setShowTrailer(true);
+    // When watching trailer, navigate back to base movie URL
+    const newPath = `/watch/${slug}`;
+    navigate(newPath, { replace: true });
   };
 
   const handleMovieClick = (movie: Movie) => {
@@ -81,8 +127,6 @@ export const WatchMoviePage = () => {
     // Try different video sources
     const videoSrc =
       currentEpisode.link_m3u8 || currentEpisode.link_embed || undefined;
-    console.log("Video source:", videoSrc);
-    console.log("Current episode:", currentEpisode);
     return videoSrc;
   };
 
@@ -141,6 +185,9 @@ export const WatchMoviePage = () => {
         <div className="mb-8">
           <div className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 rounded-2xl p-6 backdrop-blur-sm border border-gray-700/50">
             <VideoPlayer
+              key={`${slug}-${currentEpisode?.slug || "default"}-${
+                showTrailer ? "trailer" : "episode"
+              }`}
               src={getVideoSource()}
               poster={movieDetail?.thumb_url || undefined}
               title={

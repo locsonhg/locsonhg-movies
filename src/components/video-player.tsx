@@ -48,8 +48,18 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
       hlsRef.current = null;
     }
 
+    // Reset video state when source changes
     setVideoError(null);
     setIsLoading(true);
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setBuffered(0);
+    setHasStarted(false);
+
+    // Reset video element
+    video.pause();
+    video.currentTime = 0;
 
     // Check if source is HLS (M3U8)
     if (src.includes(".m3u8")) {
@@ -140,7 +150,13 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
   // Listen for fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const isCurrentlyFullscreen = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
+      setIsFullscreen(isCurrentlyFullscreen);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -230,11 +246,42 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
     if (!container) return;
 
     try {
-      if (!document.fullscreenElement) {
-        await container.requestFullscreen();
+      const isCurrentlyFullscreen = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
+
+      if (!isCurrentlyFullscreen) {
+        // Try different fullscreen methods for cross-browser compatibility
+        if (container.requestFullscreen) {
+          await container.requestFullscreen();
+        } else if ((container as any).webkitRequestFullscreen) {
+          // Safari
+          await (container as any).webkitRequestFullscreen();
+        } else if ((container as any).mozRequestFullScreen) {
+          // Firefox
+          await (container as any).mozRequestFullScreen();
+        } else if ((container as any).msRequestFullscreen) {
+          // IE/Edge
+          await (container as any).msRequestFullscreen();
+        }
         setIsFullscreen(true);
       } else {
-        await document.exitFullscreen();
+        // Exit fullscreen with cross-browser support
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          // Safari
+          await (document as any).webkitExitFullscreen();
+        } else if ((document as any).mozCancelFullScreen) {
+          // Firefox
+          await (document as any).mozCancelFullScreen();
+        } else if ((document as any).msExitFullscreen) {
+          // IE/Edge
+          await (document as any).msExitFullscreen();
+        }
         setIsFullscreen(false);
       }
     } catch (error) {

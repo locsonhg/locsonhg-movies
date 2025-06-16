@@ -72,10 +72,20 @@ export const HeroSection = ({
     <div className="relative h-[60vh] sm:h-screen overflow-hidden bg-black group">
       {/* Background Image/Video */}
       <div className="absolute inset-0">
+        {/* Large screens - use thumb_url */}
+        <LazyImage
+          src={getImageUrl(currentMovie?.thumb_url || currentMovie?.poster_url)}
+          alt={currentMovie?.name || "Featured movie"}
+          className="hidden lg:block w-full h-full object-cover scale-110"
+          placeholder={ImageService.generateLoadingPlaceholder(1920, 1080)}
+          fallbackSrc={ImageService.getFallbackUrl(1920, 1080)}
+          priority={true}
+        />
+        {/* Medium and small screens - use poster_url */}
         <LazyImage
           src={getImageUrl(currentMovie?.poster_url || currentMovie?.thumb_url)}
           alt={currentMovie?.name || "Featured movie"}
-          className="w-full h-full object-cover scale-110"
+          className="lg:hidden w-full h-full object-fill scale-110"
           placeholder={ImageService.generateLoadingPlaceholder(1920, 1080)}
           fallbackSrc={ImageService.getFallbackUrl(1920, 1080)}
           priority={true}

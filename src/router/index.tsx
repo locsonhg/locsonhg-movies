@@ -30,7 +30,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "watch/:slug",
+        path: "watch/:slug/:episodeSlug?",
         element: <WatchMoviePage />,
       },
       {
