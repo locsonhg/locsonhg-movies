@@ -118,7 +118,6 @@ export class ImageCacheManager {
 
   // Clean old cache entries
   private cleanOldEntries(): void {
-    const now = Date.now();
     const entries = Array.from(this.cache.entries());
 
     // Sort by timestamp and remove oldest entries

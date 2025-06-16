@@ -59,7 +59,7 @@ export class ImageService {
   }
 
   // Get optimized image URL (for different sizes)
-  static getOptimizedUrl(url: string, width?: number, height?: number): string {
+  static getOptimizedUrl(url: string): string {
     const normalizedUrl = this.normalizeUrl(url);
 
     // If it's our placeholder, return as is

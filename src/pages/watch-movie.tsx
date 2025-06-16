@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useMovieDetail, useSeriesMovies } from "@/hooks";
 import { VideoPlayer } from "@/components/video-player";
 import { EpisodeList } from "@/components/episode-list";
@@ -14,7 +14,6 @@ export const WatchMoviePage = () => {
     episodeSlug?: string;
   }>();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [currentEpisode, setCurrentEpisode] = useState<EpisodeData | null>(
     null
