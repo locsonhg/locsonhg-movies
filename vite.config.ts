@@ -13,5 +13,7 @@ export default defineConfig({
   },
   server: {
     port: 5174,
+    host: "0.0.0.0", // Allow access from any IP address on the local network
+    strictPort: false, // If port 5174 is busy, try the next available port
   },
 });

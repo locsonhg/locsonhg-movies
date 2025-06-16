@@ -126,6 +126,10 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
     const handleLoadStart = () => setIsLoading(true);
     const handleCanPlay = () => setIsLoading(false);
 
+    // iOS Safari fullscreen events
+    const handleWebkitBeginFullscreen = () => setIsFullscreen(true);
+    const handleWebkitEndFullscreen = () => setIsFullscreen(false);
+
     video.addEventListener("timeupdate", updateTime);
     video.addEventListener("loadedmetadata", updateDuration);
     video.addEventListener("progress", updateBuffered);
@@ -134,6 +138,13 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
     video.addEventListener("error", handleError);
     video.addEventListener("loadstart", handleLoadStart);
     video.addEventListener("canplay", handleCanPlay);
+
+    // iOS Safari specific events
+    video.addEventListener(
+      "webkitbeginfullscreen",
+      handleWebkitBeginFullscreen
+    );
+    video.addEventListener("webkitendfullscreen", handleWebkitEndFullscreen);
 
     return () => {
       video.removeEventListener("timeupdate", updateTime);
@@ -144,6 +155,14 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
       video.removeEventListener("error", handleError);
       video.removeEventListener("loadstart", handleLoadStart);
       video.removeEventListener("canplay", handleCanPlay);
+      video.removeEventListener(
+        "webkitbeginfullscreen",
+        handleWebkitBeginFullscreen
+      );
+      video.removeEventListener(
+        "webkitendfullscreen",
+        handleWebkitEndFullscreen
+      );
     };
   }, []);
 
@@ -243,7 +262,8 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
 
   const toggleFullscreen = async () => {
     const container = containerRef.current;
-    if (!container) return;
+    const video = videoRef.current;
+    if (!container || !video) return;
 
     try {
       const isCurrentlyFullscreen = !!(
@@ -254,11 +274,28 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
       );
 
       if (!isCurrentlyFullscreen) {
+        // Check if this is iOS Safari (where we need to use video element fullscreen)
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari =
+          /Safari/.test(navigator.userAgent) &&
+          !/Chrome/.test(navigator.userAgent);
+
+        if (isIOS && isSafari && (video as any).webkitEnterFullscreen) {
+          // iOS Safari - use video element's native fullscreen
+          try {
+            (video as any).webkitEnterFullscreen();
+            setIsFullscreen(true);
+            return;
+          } catch (error) {
+            console.log("iOS fullscreen failed, trying container fullscreen");
+          }
+        }
+
         // Try different fullscreen methods for cross-browser compatibility
         if (container.requestFullscreen) {
           await container.requestFullscreen();
         } else if ((container as any).webkitRequestFullscreen) {
-          // Safari
+          // Safari desktop
           await (container as any).webkitRequestFullscreen();
         } else if ((container as any).mozRequestFullScreen) {
           // Firefox
@@ -370,8 +407,19 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
     <div
       ref={containerRef}
       className={`relative bg-black group overflow-hidden ${
-        isFullscreen ? "w-screen h-screen" : "w-full aspect-video"
+        isFullscreen
+          ? "w-screen h-screen"
+          : "w-full aspect-video max-w-full max-h-full"
       } rounded-lg shadow-2xl focus:outline-none`}
+      style={{
+        // Prevent iOS Safari from breaking layout
+        maxWidth: isFullscreen ? "100vw" : "100%",
+        maxHeight: isFullscreen ? "100vh" : "none",
+        position: isFullscreen ? "fixed" : "relative",
+        top: isFullscreen ? "0" : "auto",
+        left: isFullscreen ? "0" : "auto",
+        zIndex: isFullscreen ? "9999" : "auto",
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => {
         if (isPlaying) {
@@ -385,6 +433,11 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
         ref={videoRef}
         poster={poster}
         className="w-full h-full object-contain bg-black"
+        style={{
+          // Ensure video doesn't break out of container on iOS
+          maxWidth: "100%",
+          maxHeight: "100%",
+        }}
         onClick={togglePlay}
         controls={false}
         playsInline
