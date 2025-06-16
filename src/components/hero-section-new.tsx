@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui";
+import { LazyImage } from "@/components/ui";
+import { ImageService } from "@/services";
 import type { Movie } from "@/types";
 
 // Extended movie type for featured movies with detail data
@@ -28,10 +30,10 @@ export const HeroSection = ({
 
   // Helper function to get full image URL
   const getImageUrl = (url: string | undefined) => {
-    if (!url)
-      return "https://via.placeholder.com/1920x1080/1f2937/ffffff?text=No+Image";
-    if (url.startsWith("http")) return url;
-    return `https://phimimg.com/${url}`;
+    return (
+      ImageService.normalizeUrl(url || "") ||
+      ImageService.getFallbackUrl(1920, 1080)
+    );
   };
 
   const currentMovie = featuredMovies[currentSlide];
@@ -70,10 +72,13 @@ export const HeroSection = ({
     <div className="relative h-[60vh] sm:h-screen overflow-hidden bg-black group">
       {/* Background Image/Video */}
       <div className="absolute inset-0">
-        <img
+        <LazyImage
           src={getImageUrl(currentMovie?.poster_url || currentMovie?.thumb_url)}
-          alt={currentMovie?.name}
+          alt={currentMovie?.name || "Featured movie"}
           className="w-full h-full object-cover scale-110"
+          placeholder={ImageService.generateLoadingPlaceholder(1920, 1080)}
+          fallbackSrc={ImageService.getFallbackUrl(1920, 1080)}
+          priority={true}
         />
         {/* Gradient overlays for better text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>

@@ -11,6 +11,7 @@ import {
   SkipForward,
   Loader2,
 } from "lucide-react";
+import { LazyImage } from "@/components/ui";
 
 interface VideoPlayerProps {
   src?: string;
@@ -383,13 +384,12 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
       {/* Poster Overlay - Show when video hasn't started yet */}
       {src && !videoError && !isLoading && !hasStarted && poster && (
         <div className="absolute inset-0 bg-black">
-          <img
+          <LazyImage
             src={poster}
             alt={title || "Video poster"}
             className="w-full h-full object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
+            onError={() => {
+              // Hide poster on error
             }}
           />
           {/* Poster Overlay with Play Button */}

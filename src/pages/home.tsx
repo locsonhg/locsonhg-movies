@@ -1,6 +1,9 @@
+import { useEffect } from "react";
 import { HeroSection } from "@/components/hero-section";
 import { MovieRow } from "@/components/movie-row";
 import { useNewMovies, useMoviesByType } from "@/hooks/use-movies";
+import { LazyImage } from "@/components/ui";
+import { preloadCriticalImages } from "@/utils";
 import type { Movie } from "@/types";
 
 export const HomePage = () => {
@@ -19,6 +22,20 @@ export const HomePage = () => {
 
   // Get featured movies from new movies for hero section
   const featuredMovies = newMovies?.items?.slice(0, 5) || [];
+
+  // Preload critical images when data is available
+  useEffect(() => {
+    if (featuredMovies.length > 0) {
+      preloadCriticalImages(featuredMovies);
+    }
+  }, [featuredMovies]);
+
+  // Also preload visible movie grid images
+  useEffect(() => {
+    if (newMovies?.items && newMovies.items.length > 0) {
+      preloadCriticalImages(newMovies.items.slice(0, 12));
+    }
+  }, [newMovies?.items]);
 
   console.log("Featured Movies:", featuredMovies);
   console.log("New Movies Data:", newMovies);
@@ -75,14 +92,11 @@ export const HomePage = () => {
 
                   <div className="bg-gray-800/50 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
                     <div className="aspect-[2/3] overflow-hidden">
-                      <img
+                      <LazyImage
                         src={movie.poster_url || movie.thumb_url}
                         alt={movie.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://via.placeholder.com/300x450?text=No+Image";
-                        }}
+                        fallbackSrc="https://via.placeholder.com/300x450?text=No+Image"
                       />
                     </div>
 

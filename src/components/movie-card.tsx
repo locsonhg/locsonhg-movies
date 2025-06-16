@@ -1,4 +1,6 @@
 import type { Movie } from "@/types";
+import { SimpleImage } from "@/components/ui";
+import { ImageService } from "@/services";
 
 interface MovieCardProps {
   movie: Movie;
@@ -8,10 +10,8 @@ interface MovieCardProps {
 export const MovieCard = ({ movie, onClick }: MovieCardProps) => {
   // Helper function to get full image URL
   const getImageUrl = (url: string | undefined) => {
-    if (!url)
-      return "https://via.placeholder.com/300x450/1f2937/ffffff?text=No+Image";
-    if (url.startsWith("http")) return url;
-    return `https://phimimg.com/${url}`;
+    if (!url) return ImageService.getFallbackUrl();
+    return ImageService.normalizeUrl(url);
   };
 
   return (
@@ -20,14 +20,10 @@ export const MovieCard = ({ movie, onClick }: MovieCardProps) => {
       onClick={() => onClick?.(movie)}
     >
       <div className="aspect-[2/3] overflow-hidden relative">
-        <img
+        <SimpleImage
           src={getImageUrl(movie.poster_url || movie.thumb_url)}
           alt={movie.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          onError={(e) => {
-            e.currentTarget.src =
-              "https://via.placeholder.com/300x450/1f2937/ffffff?text=No+Image";
-          }}
         />
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

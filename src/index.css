@@ -26,3 +26,40 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
+
+/* Image loading optimizations */
+img {
+  /* Prevent layout shift while images load */
+  object-fit: cover;
+}
+
+/* Lazy loading shimmer effect */
+.image-loading {
+  background: linear-gradient(
+    90deg,
+    rgba(55, 65, 81, 0.4) 25%,
+    rgba(75, 85, 99, 0.4) 37%,
+    rgba(55, 65, 81, 0.4) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Blur to sharp transition for progressive image loading */
+.blur-to-sharp {
+  filter: blur(5px);
+  transition: filter 0.3s ease-out;
+}
+
+.blur-to-sharp.loaded {
+  filter: blur(0px);
+}

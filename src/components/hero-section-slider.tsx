@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui";
+import { LazyImage } from "@/components/ui";
 import type { Movie } from "@/types";
 
 interface HeroSectionProps {
@@ -50,10 +51,12 @@ export const HeroSection = ({
     <div className="relative h-screen overflow-hidden bg-black group">
       {/* Background Image/Video */}
       <div className="absolute inset-0">
-        <img
+        <LazyImage
           src={currentMovie.poster_url || currentMovie.thumb_url}
           alt={currentMovie.name}
           className="w-full h-full object-cover scale-110"
+          placeholder="https://via.placeholder.com/1920x1080/1f2937/ffffff?text=Loading..."
+          priority={true}
         />
         {/* Gradient overlays for better text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
