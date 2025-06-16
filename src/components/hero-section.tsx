@@ -68,7 +68,7 @@ export const HeroSection = ({
             <div className="flex items-center space-x-3 mb-3">
               {(currentMovie.category || []).slice(0, 3).map((cat, index) => (
                 <span
-                  key={cat.id}
+                  key={cat._id}
                   className="text-gray-300 text-sm font-medium"
                 >
                   {cat.name}

@@ -106,7 +106,7 @@ export const MovieCard = ({ movie, onClick }: MovieCardProps) => {
           <div className="flex flex-wrap gap-1 mt-2">
             {movie.category.slice(0, 2).map((cat) => (
               <span
-                key={cat.id}
+                key={cat._id}
                 className="bg-gray-700/30 text-gray-400 px-2 py-1 rounded-md text-xs"
               >
                 {cat.name}

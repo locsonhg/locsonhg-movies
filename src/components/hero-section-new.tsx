@@ -94,7 +94,7 @@ export const HeroSection = ({
               </span>
               {currentMovie.category?.slice(0, 2).map((cat) => (
                 <span
-                  key={cat.id}
+                  key={cat._id}
                   className="bg-white/20 text-white px-2 py-1 rounded text-xs font-medium"
                 >
                   {cat.name}

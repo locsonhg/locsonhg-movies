@@ -4,6 +4,7 @@ import type {
   MovieListParams,
   SearchParams,
   MovieType,
+  CategoriesResponse,
 } from "@/types";
 import { phimApi } from "@/lib/axios";
 
@@ -81,8 +82,8 @@ class MovieService {
   /**
    * Lấy danh sách thể loại
    */
-  async getCategories(): Promise<any> {
-    return this.fetchFromAPI<any>("/the-loai");
+  async getCategories(): Promise<CategoriesResponse> {
+    return this.fetchFromAPI<CategoriesResponse>("/the-loai");
   }
 
   /**

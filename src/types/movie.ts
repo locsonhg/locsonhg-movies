@@ -42,13 +42,13 @@ export interface Movie {
 }
 
 export interface Category {
-  id: string;
+  _id: string;
   name: string;
   slug: string;
 }
 
 export interface Country {
-  id: string;
+  _id: string;
   name: string;
   slug: string;
 }
@@ -74,6 +74,30 @@ export interface MovieResponse {
   status: boolean;
   items: Movie[];
   pagination: Pagination;
+}
+
+export interface MovieResponseV2 {
+  status: string;
+  msg: string;
+  data: {
+    seoOnPage: any;
+    breadCrumb: any[];
+    titlePage: string;
+    items: Movie[];
+    params: {
+      type_slug: string;
+      filterCategory: string[];
+      filterCountry: string[];
+      filterYear: string[];
+      filterType: string[];
+      sortField: string;
+      sortType: string;
+      pagination: Pagination;
+    };
+    type_list: string;
+    APP_DOMAIN_FRONTEND: string;
+    APP_DOMAIN_CDN_IMAGE: string;
+  };
 }
 
 export interface MovieDetailResponse {
@@ -128,3 +152,5 @@ export type MovieType =
   | "phim-vietsub"
   | "phim-thuyet-minh"
   | "phim-long-tieng";
+
+export type CategoriesResponse = Category[];

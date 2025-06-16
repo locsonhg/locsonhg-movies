@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Layout } from "@/components/layout";
 import { HomePage } from "@/pages/home-page-new";
-import { MoviesPage } from "@/pages";
+import { MoviesPage, CategoriesPage, MovieTypePage } from "@/pages";
 import { WatchMoviePage } from "@/pages/watch-movie";
 import { ErrorBoundary } from "./error-boundary";
 
@@ -36,6 +36,26 @@ const router = createBrowserRouter([
       {
         path: "search",
         element: <div>Search Page - Coming Soon</div>,
+      },
+      {
+        path: "categories",
+        element: <CategoriesPage />,
+      },
+      {
+        path: "phim-bo",
+        element: <MovieTypePage />,
+      },
+      {
+        path: "phim-le",
+        element: <MovieTypePage />,
+      },
+      {
+        path: "hoat-hinh",
+        element: <MovieTypePage />,
+      },
+      {
+        path: "tv-shows",
+        element: <MovieTypePage />,
       },
       {
         path: "favorites",
