@@ -60,7 +60,7 @@ export const RecommendedMovies = ({
             className="group cursor-pointer"
             onClick={() => onMovieClick(movie)}
           >
-            <div className="relative overflow-hidden rounded-lg bg-gray-800 aspect-[3/4] mb-2">
+            <div className="relative overflow-hidden rounded-lg bg-gray-800 aspect-[3/4] mb-3">
               {/* Movie Poster */}
               <img
                 src={
@@ -89,13 +89,6 @@ export const RecommendedMovies = ({
                 </div>
               )}
 
-              {/* Episode Info */}
-              {movie.episode_current && (
-                <div className="absolute top-1 right-1 md:top-2 md:right-2 bg-black/70 text-white text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded">
-                  {movie.episode_current}
-                </div>
-              )}
-
               {/* Rating */}
               {movie.tmdb?.vote_average && (
                 <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 flex items-center bg-black/70 text-white text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded">
@@ -109,15 +102,22 @@ export const RecommendedMovies = ({
             </div>
 
             {/* Movie Info */}
-            <div className="space-y-1">
-              <h4 className="text-white font-medium text-xs md:text-sm line-clamp-2 group-hover:text-green-400 transition-colors">
+            <div className="space-y-2">
+              <h4 className="text-white font-medium text-xs md:text-sm truncate group-hover:text-green-400 transition-colors">
                 {movie.name}
               </h4>
+
+              {/* Episode Count - Now below the image */}
+              {movie.episode_current && (
+                <div className="text-[10px] text-green-400 bg-green-500/20 px-2 py-1 rounded inline-block">
+                  {movie.episode_current}
+                </div>
+              )}
 
               <div className="flex items-center justify-between text-xs text-gray-400">
                 <span>{movie.year}</span>
                 {movie.country && movie.country[0] && (
-                  <span className="hidden sm:block">
+                  <span className="hidden sm:block truncate ml-2">
                     {movie.country[0].name}
                   </span>
                 )}

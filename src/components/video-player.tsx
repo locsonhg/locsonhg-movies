@@ -136,6 +136,34 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
     };
   }, []);
 
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+    document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        handleFullscreenChange
+      );
+      document.removeEventListener(
+        "mozfullscreenchange",
+        handleFullscreenChange
+      );
+      document.removeEventListener(
+        "MSFullscreenChange",
+        handleFullscreenChange
+      );
+    };
+  }, []);
+
   useEffect(() => {
     if (showControls) {
       if (controlsTimeoutRef.current) {
@@ -240,18 +268,69 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
     setShowControls(true);
   };
 
+  // Listen for keyboard events - placed after function declarations
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle key events when the video player container is focused or when target is video/container
+      const container = containerRef.current;
+      const video = videoRef.current;
+
+      if (!container || !video) return;
+
+      // Check if the key event is happening within our video player
+      const isTargetingVideoPlayer =
+        e.target === video ||
+        e.target === container ||
+        container.contains(e.target as Node);
+
+      if (!isTargetingVideoPlayer) return;
+
+      switch (e.key.toLowerCase()) {
+        case "f":
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case " ":
+        case "k":
+          e.preventDefault();
+          togglePlay();
+          break;
+        case "m":
+          e.preventDefault();
+          toggleMute();
+          break;
+        case "arrowleft":
+          e.preventDefault();
+          skipTime(-10);
+          break;
+        case "arrowright":
+          e.preventDefault();
+          skipTime(10);
+          break;
+      }
+    };
+
+    // Add event listener to document
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [toggleFullscreen, togglePlay, toggleMute, skipTime]);
+
   return (
     <div
       ref={containerRef}
       className={`relative bg-black group overflow-hidden ${
         isFullscreen ? "w-screen h-screen" : "w-full aspect-video"
-      } rounded-lg shadow-2xl`}
+      } rounded-lg shadow-2xl focus:outline-none`}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => {
         if (isPlaying) {
           setShowControls(false);
         }
       }}
+      tabIndex={0}
     >
       {/* Video Element */}
       <video
@@ -269,8 +348,10 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
         <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="text-center">
             <Loader2 className="w-12 h-12 text-green-400 animate-spin mx-auto mb-4" />
-            <p className="text-white text-lg font-medium">Đang tải video...</p>
-            <p className="text-gray-300 text-sm mt-1">
+            <p className="text-white text-sm sm:text-lg font-medium">
+              Đang tải video...
+            </p>
+            <p className="text-gray-300 text-xs sm:text-sm mt-1">
               Vui lòng chờ trong giây lát
             </p>
           </div>
@@ -284,13 +365,13 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
             <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full flex items-center justify-center border border-red-500/30">
               <Play className="w-10 h-10 text-red-400 ml-1" />
             </div>
-            <h3 className="text-white text-xl font-bold mb-2">
+            <h3 className="text-white text-lg sm:text-xl font-bold mb-2">
               {videoError ? "Lỗi phát video" : "Video không khả dụng"}
             </h3>
-            <p className="text-gray-300 text-base mb-4">
+            <p className="text-gray-300 text-sm sm:text-base mb-4">
               {videoError || title || "Không thể tải nội dung video"}
             </p>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 text-xs sm:text-sm">
               {videoError
                 ? "Vui lòng chọn server khác hoặc thử lại sau"
                 : "Vui lòng chọn tập khác hoặc thử lại sau"}
@@ -328,10 +409,10 @@ export const VideoPlayer = ({ src, poster, title }: VideoPlayerProps) => {
 
               {/* Title and Description */}
               <div className="absolute top-full mt-6 left-1/2 transform -translate-x-1/2 text-center min-w-max">
-                <p className="text-white text-lg sm:text-xl font-bold mb-2 drop-shadow-lg">
+                <p className="text-white text-base sm:text-lg md:text-xl font-bold mb-2 drop-shadow-lg">
                   {title || "Bấm để phát"}
                 </p>
-                <p className="text-gray-200 text-sm opacity-90">
+                <p className="text-gray-200 text-xs sm:text-sm opacity-90">
                   Nhấn để bắt đầu xem
                 </p>
               </div>

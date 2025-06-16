@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock, Eye, MessageCircle } from "lucide-react";
 import { useMovieDetail, useSeriesMovies } from "@/hooks";
 import { VideoPlayer } from "@/components/video-player";
 import { EpisodeList } from "@/components/episode-list";
@@ -95,19 +94,6 @@ export const WatchMoviePage = () => {
   if (movieDetailLoading) {
     return (
       <div className="min-h-screen bg-black">
-        {" "}
-        {/* Header */}
-        <div className="sticky top-0 z-50 bg-black/90 backdrop-blur-sm border-b border-gray-800">
-          <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 lg:py-4">
-            <button
-              onClick={goBack}
-              className="flex items-center space-x-2 text-white hover:text-green-400 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Quay lại</span>
-            </button>
-          </div>
-        </div>
         {/* Loading Skeleton */}
         <div className="container mx-auto px-4 py-6">
           <div className="animate-pulse">
@@ -149,38 +135,8 @@ export const WatchMoviePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-black/95 backdrop-blur-md border-b border-gray-800/50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={goBack}
-              className="flex items-center space-x-2 text-white hover:text-green-400 transition-all duration-200 group"
-            >
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
-              <span className="font-medium">Quay lại</span>
-            </button>
-
-            <div className="hidden lg:flex items-center space-x-6 text-sm text-gray-400">
-              <div className="flex items-center space-x-2 bg-gray-800/50 px-3 py-1 rounded-lg">
-                <Eye className="w-4 h-4" />
-                <span>1.2M lượt xem</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-gray-800/50 px-3 py-1 rounded-lg">
-                <Clock className="w-4 h-4" />
-                <span>Cập nhật: {new Date().toLocaleDateString("vi-VN")}</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-gray-800/50 px-3 py-1 rounded-lg">
-                <MessageCircle className="w-4 h-4" />
-                <span>247 bình luận</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content - Better padding for mobile */}
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 lg:py-6">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 pt-16 lg:pt-20 pb-4 lg:pb-6">
         {/* Video Player Section */}
         <div className="mb-8">
           <div className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 rounded-2xl p-6 backdrop-blur-sm border border-gray-700/50">
